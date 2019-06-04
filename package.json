@@ -18,6 +18,7 @@
     "express": "^4.17.1",
     "express-handlebars": "^3.1.0",
     "express-session": "^1.16.1",
+    "faker": "^4.1.0",
     "handlebars-helpers": "^0.10.0",
     "method-override": "^3.0.0",
     "multer": "^1.4.1",
