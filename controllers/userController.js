@@ -66,7 +66,21 @@ const userController = {
 
   getUser: (req, res) => {
     return User.findByPk(req.params.id).then(user => {
-      return res.render('users/profile', { user: user })
+      return res.render('users/profile', { profile: user })
+    })
+  },
+
+  editUser: (req, res) => {
+    return User.findByPk(req.params.id).then(user => {
+      return res.render('users/edit', { user: user })
+    })
+  },
+
+  putUser: (req, res) => {
+    return User.findByPk(req.params.id).then(user => {
+      user.update({ name: req.body.name }).then(user => {
+        res.redirect(`/users/${req.params.id}`)
+      })
     })
   }
 }
