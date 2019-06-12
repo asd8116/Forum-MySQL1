@@ -45,13 +45,13 @@ const userController = {
     res.redirect('/signin')
   },
 
-  editUser: (req, res) => {
+  editUsers: (req, res) => {
     return User.findAll().then(users => {
       return res.render('admin/users', { users: users })
     })
   },
 
-  putUser: (req, res) => {
+  putUsers: (req, res) => {
     return User.findByPk(req.params.id).then(user => {
       const { isAdmin } = user
       const updatedAdmin = !isAdmin
@@ -61,6 +61,12 @@ const userController = {
         req.flash('success_messages', `${output} was successfully to update`)
         res.redirect('/admin/users')
       })
+    })
+  },
+
+  getUser: (req, res) => {
+    return User.findByPk(req.params.id).then(user => {
+      return res.render('users/profile', { user: user })
     })
   }
 }
