@@ -18,3 +18,22 @@
     </div>
   </div>
 </div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <strong>{{profile.Comments.length}}則 已評論餐廳</strong>
+      </div>
+
+      <div class="card-body">
+        {{#each profile.Comments}}
+        <a href="/restaurants/{{this.Restaurant.id}}">
+          <img src={{this.Restaurant.image}} class="card-img" alt="avatar"
+            style="border-radius: 50%; width: 5em; height: 5em;">
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>
