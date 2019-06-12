@@ -81,6 +81,10 @@ const userController = {
   },
 
   putUser: (req, res) => {
+    if (Number(req.params.id) !== req.user.id) {
+      return res.redirect(`/users/${req.user.id}`)
+    }
+
     const { file } = req
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID)

@@ -13,7 +13,9 @@
       <div class="card-body">
         <h5 class="card-title">{{profile.name}}</h5>
         <p class="card-text">{{profile.email}}</p>
+        {{#ifCond profile.id user.id}}
         <p><a href="/users/{{profile.id}}/edit" class="btn btn-outline-primary">Edit</a></p>
+        {{/ifCond}}
       </div>
     </div>
   </div>
