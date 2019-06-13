@@ -7,9 +7,14 @@ const commentController = {
       text: req.body.text,
       RestaurantId: req.body.restaurantId,
       UserId: req.user.id
-    }).then(restaurant => {
-      res.redirect(`/restaurants/${req.body.restaurantId}`)
     })
+      .then(restaurant => {
+        res.redirect(`/restaurants/${req.body.restaurantId}`)
+      })
+      .catch(err => {
+        console.log(err)
+        return res.status(422).json(err)
+      })
   },
 
   deleteComment: (req, res) => {

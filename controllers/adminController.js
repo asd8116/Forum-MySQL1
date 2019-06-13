@@ -36,10 +36,15 @@ const adminController = {
           description: req.body.description,
           image: file ? img.data.link : null,
           CategoryId: req.body.categoryId
-        }).then(restaurant => {
-          req.flash('success_messages', 'restaurant was successfully created')
-          return res.redirect('/admin/restaurants')
         })
+          .then(restaurant => {
+            req.flash('success_messages', 'restaurant was successfully created')
+            return res.redirect('/admin/restaurants')
+          })
+          .catch(err => {
+            console.log(err)
+            return res.status(422).json(err)
+          })
       })
     } else {
       return Restaurant.create({
@@ -50,10 +55,15 @@ const adminController = {
         description: req.body.description,
         image: null,
         CategoryId: req.body.categoryId
-      }).then(restaurant => {
-        req.flash('success_messages', 'restaurant was successfully created')
-        return res.redirect('/admin/restaurants')
       })
+        .then(restaurant => {
+          req.flash('success_messages', 'restaurant was successfully created')
+          return res.redirect('/admin/restaurants')
+        })
+        .catch(err => {
+          console.log(err)
+          return res.status(422).json(err)
+        })
     }
   },
 

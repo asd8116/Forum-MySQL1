@@ -19,9 +19,14 @@ const categoryController = {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
     } else {
-      return Category.create({ name: req.body.name }).then(category => {
-        res.redirect('/admin/categories')
-      })
+      return Category.create({ name: req.body.name })
+        .then(category => {
+          res.redirect('/admin/categories')
+        })
+        .catch(err => {
+          console.log(err)
+          return res.status(422).json(err)
+        })
     }
   },
 
