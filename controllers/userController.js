@@ -54,25 +54,6 @@ const userController = {
     res.redirect('/signin')
   },
 
-  editUsers: (req, res) => {
-    return User.findAll().then(users => {
-      return res.render('admin/users', { users: users })
-    })
-  },
-
-  putUsers: (req, res) => {
-    return User.findByPk(req.params.id).then(user => {
-      const { isAdmin } = user
-      const updatedAdmin = !isAdmin
-      const output = updatedAdmin ? 'admin' : 'user'
-
-      user.update({ isAdmin: updatedAdmin }).then(user => {
-        req.flash('success_messages', `${output} was successfully to update`)
-        res.redirect('/admin/users')
-      })
-    })
-  },
-
   getUser: (req, res) => {
     return User.findByPk(req.params.id, { include: [{ model: Comment, include: [Restaurant] }] }).then(user => {
       return res.render('users/profile', { profile: user })
