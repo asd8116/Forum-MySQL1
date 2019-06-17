@@ -38,7 +38,10 @@ const restController = {
 
   getRestaurant: (req, res) => {
     return Restaurant.findByPk(req.params.id, { include: [Category, { model: Comment, include: [User] }] }).then(restaurant => {
-      return res.render('restaurant', { restaurant: restaurant })
+      restaurant.viewCounts += 1
+      restaurant.save().then(restaurant => {
+        return res.render('restaurant', { restaurant: restaurant })
+      })
     })
   },
 
