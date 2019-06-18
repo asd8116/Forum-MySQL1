@@ -2,10 +2,10 @@
   <div class="row no-gutters">
     <div class="col-md-4">
       {{#if profile.image}}
-      <img src="{{profile.image}}" class="card-img" alt="avatar" style="border-radius: 50%; width: 15em; height: 15em;">
+      <img src="{{profile.image}}" class="card-img" alt="avatar" style="border-radius: 50%; width: 20em; height: 20em;">
       {{else}}
       <img src="https://via.placeholder.com/400" class="card-img" alt="avatar"
-        style="border-radius: 50%; width: 15em; height: 15em;">
+        style="border-radius: 50%; width: 20em; height: 20em;">
       {{/if}}
     </div>
 
@@ -13,8 +13,23 @@
       <div class="card-body">
         <h5 class="card-title">{{profile.name}}</h5>
         <p class="card-text">{{profile.email}}</p>
+        <p>{{profile.Comments.length}} 則已評論餐廳</p>
+        <p>{{profile.FavoritedRestaurants.length}} 個收藏的餐廳</p>
+        <p>{{profile.Followings.length}} followings(追蹤者)</p>
+        <p>{{profile.Followers.length}} followers(追隨者)</p>
+
         {{#ifCond profile.id user.id}}
         <p><a href="/users/{{profile.id}}/edit" class="btn btn-outline-primary">Edit</a></p>
+        {{else}}
+        <div>
+          {{#if isFollowed }}
+          <form action="/following/{{profile.id}}?_method=DELETE" method="POST" style="display: contents;">
+            <button type="submit" class="btn btn-danger">取消追蹤</button></form>
+          {{else}}
+          <form action="/following/{{profile.id}}" method="POST" style="display: contents;">
+            <button type="submit" class="btn btn-primary">追蹤</button></form>
+          {{/if}}
+        </div>
         {{/ifCond}}
       </div>
     </div>
@@ -22,17 +37,80 @@
 </div>
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-12 mb-4">
     <div class="card">
       <div class="card-header">
-        <strong>{{profile.Comments.length}}則 已評論餐廳</strong>
+        <strong>{{profile.Comments.length}} 則已評論餐廳</strong>
       </div>
 
       <div class="card-body">
         {{#each profile.Comments}}
         <a href="/restaurants/{{this.Restaurant.id}}">
-          <img src={{this.Restaurant.image}} class="card-img" alt="avatar"
-            style="border-radius: 50%; width: 5em; height: 5em;">
+          {{#if this.Restaurant.image}}
+          <img src={{this.Restaurant.image}} class="card-img p-1" alt="avatar" style="width: 4em; height: 4em;">
+          {{else}}
+          <img src="https://via.placeholder.com/100" class="card-img p-1" alt="avatar" style="width: 4em; height: 4em;">
+          {{/if}}
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <strong>{{profile.FavoritedRestaurants.length}} 個收藏的餐廳</strong>
+      </div>
+
+      <div class="card-body">
+        {{#each profile.FavoritedRestaurants}}
+        <a href="/restaurants/{{this.id}}">
+          {{#if this.image}}
+          <img src={{this.image}} class="card-img p-1" alt="avatar" style="width: 4em; height: 4em;">
+          {{else}}
+          <img src="https://via.placeholder.com/100" class="card-img p-1" alt="avatar" style="width: 4em; height: 4em;">
+          {{/if}}
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <strong>{{profile.Followings.length}} followings(追蹤者)</strong>
+      </div>
+
+      <div class="card-body">
+        {{#each profile.Followings}}
+        <a href="/users/{{this.id}}">
+          {{#if this.image}}
+          <img src={{this.image}} class="card-img p-1" alt="avatar" style="width: 4em; height: 4em;">
+          {{else}}
+          <img src="https://via.placeholder.com/100" class="card-img p-1" alt="avatar" style="width: 4em; height: 4em;">
+          {{/if}}
+        </a>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <strong>{{profile.Followers.length}} followers(追隨者)</strong>
+      </div>
+
+      <div class="card-body">
+        {{#each profile.Followers}}
+        <a href="/users/{{this.id}}">
+          {{#if this.image}}
+          <img src={{this.image}} class="card-img p-1" alt="avatar" style="width: 4em; height: 4em;">
+          {{else}}
+          <img src="https://via.placeholder.com/100" class="card-img p-1" alt="avatar" style="width: 4em; height: 4em;">
+          {{/if}}
         </a>
         {{/each}}
       </div>
