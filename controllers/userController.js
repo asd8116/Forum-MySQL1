@@ -62,7 +62,14 @@ const userController = {
       include: [{ model: Comment, include: [Restaurant] }, { model: Restaurant, as: 'FavoritedRestaurants' }, { model: User, as: 'Followings' }, { model: User, as: 'Followers' }]
     }).then(user => {
       const isFollowed = req.user.Followings.map(d => d.id).includes(user.id)
-      return res.render('users/profile', { profile: user, isFollowed: isFollowed })
+      let map = user.Comments.reduce((map, { Restaurant }) => {
+        if (Restaurant && !map.has(Restaurant.id)) {
+          map.set(Restaurant.id, Restaurant)
+        }
+        return map
+      }, new Map())
+
+      return res.render('users/profile', { profile: user, isFollowed: isFollowed, restaurantArray: [...map.values()] })
     })
   },
 
