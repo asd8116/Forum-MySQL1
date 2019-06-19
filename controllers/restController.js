@@ -76,7 +76,10 @@ const restController = {
         // 判斷目前登入使用者是否已收藏該 Restaurant
         isFavorited: restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
       }))
-      restaurants = restaurants.sort((a, b) => b.FavoriteCount - a.FavoriteCount)
+      restaurants = restaurants
+        .filter(item => item.FavoriteCount > 0)
+        .sort((a, b) => b.FavoriteCount - a.FavoriteCount)
+        .map((res, index) => ({ ...res, rank: index + 1 }))
       return res.render('topRestaurants', { restaurants: restaurants })
     })
   }
