@@ -52,7 +52,7 @@ const restController = {
   },
 
   getFeeds: (req, res) => {
-    return Restaurant.findAll({ limit: 10, order: [['createdAt', 'DESC']], include: [Category] }).then(restaurants => {
+    Restaurant.findAll({ limit: 10, order: [['createdAt', 'DESC']], include: [Category] }).then(restaurants => {
       Comment.findAll({ limit: 10, order: [['createdAt', 'DESC']], include: [User, Restaurant] }).then(comments => {
         return res.render('feeds', { restaurants: restaurants, comments: comments })
       })
@@ -68,19 +68,19 @@ const restController = {
   },
 
   getTopRestaurants: (req, res) => {
-    return Restaurant.findAll({ limit: 10, include: [{ model: User, as: 'FavoritedUsers' }] }).then(restaurants => {
-      restaurants = restaurants.map(restaurant => ({
+    Restaurant.findAll({ limit: 10, include: [{ model: User, as: 'FavoritedUsers' }] }).then(restaurants => {
+      let resData = restaurants.map(restaurant => ({
         ...restaurant.dataValues,
         description: restaurant.dataValues.description.substring(0, 30),
         FavoriteCount: restaurant.FavoritedUsers.length,
         // 判斷目前登入使用者是否已收藏該 Restaurant
         isFavorited: restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
       }))
-      restaurants = restaurants
+      let filteredData = resData
         .filter(item => item.FavoriteCount > 0)
         .sort((a, b) => b.FavoriteCount - a.FavoriteCount)
         .map((res, index) => ({ ...res, rank: index + 1 }))
-      return res.render('topRestaurants', { restaurants: restaurants })
+      return res.render('topRestaurants', { restaurants: filteredData })
     })
   }
 }
