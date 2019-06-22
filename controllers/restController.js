@@ -68,18 +68,19 @@ const restController = {
   },
 
   getTopRestaurants: (req, res) => {
-    Restaurant.findAll({ limit: 10, include: [{ model: User, as: 'FavoritedUsers' }] }).then(restaurants => {
+    Restaurant.findAll({ include: [{ model: User, as: 'FavoritedUsers' }] }).then(restaurants => {
       let resData = restaurants.map(restaurant => ({
         ...restaurant.dataValues,
         description: restaurant.dataValues.description.substring(0, 30),
-        FavoriteCount: restaurant.FavoritedUsers.length,
+        favoriteCount: restaurant.FavoritedUsers.length,
         // 判斷目前登入使用者是否已收藏該 Restaurant
         isFavorited: restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
       }))
       let filteredData = resData
-        .filter(item => item.FavoriteCount > 0)
-        .sort((a, b) => b.FavoriteCount - a.FavoriteCount)
+        .filter(item => item.favoriteCount > 0)
+        .sort((a, b) => b.favoriteCount - a.favoriteCount)
         .map((res, index) => ({ ...res, rank: index + 1 }))
+        .slice(0, 10)
       return res.render('topRestaurants', { restaurants: filteredData })
     })
   }
