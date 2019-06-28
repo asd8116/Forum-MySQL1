@@ -21,6 +21,7 @@ app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
+app.use(express.static('public'))
 app.use('/upload', express.static(__dirname + '/upload'))
 
 app.use((req, res, next) => {
