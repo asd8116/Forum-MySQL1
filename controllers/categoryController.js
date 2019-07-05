@@ -2,53 +2,41 @@ const db = require('../models')
 const Category = db.Category
 
 const categoryController = {
-  getCategories: (req, res) => {
-    return Category.findAll().then(categories => {
-      if (req.params.id) {
-        Category.findByPk(req.params.id).then(category => {
-          return res.render('admin/categories', { categories: categories, category: category })
-        })
-      } else {
-        return res.render('admin/categories', { categories: categories })
-      }
-    })
+  getCategories: async (req, res) => {
+    const categories = await Category.findAll()
+    if (req.params.id) {
+      const category = await Category.findByPk(req.params.id)
+      res.render('admin/categories', { categories: categories, category: category })
+    } else {
+      res.render('admin/categories', { categories: categories })
+    }
   },
 
-  postCategory: (req, res) => {
+  postCategory: async (req, res) => {
     if (!req.body.name) {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
     } else {
-      return Category.create({ name: req.body.name })
-        .then(category => {
-          res.redirect('/admin/categories')
-        })
-        .catch(err => {
-          console.log(err)
-          return res.status(422).json(err)
-        })
+      await Category.create({ name: req.body.name })
+      res.redirect('/admin/categories')
     }
   },
 
-  putCategory: (req, res) => {
+  putCategory: async (req, res) => {
     if (!req.body.name) {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
     } else {
-      return Category.findByPk(req.params.id).then(category => {
-        category.update(req.body).then(category => {
-          res.redirect('/admin/categories')
-        })
-      })
+      const category = await Category.findByPk(req.params.id)
+      await category.update(req.body)
+      res.redirect('/admin/categories')
     }
   },
 
-  deleteCategory: (req, res) => {
-    return Category.findByPk(req.params.id).then(category => {
-      category.destroy().then(category => {
-        res.redirect('/admin/categories')
-      })
-    })
+  deleteCategory: async (req, res) => {
+    const category = await Category.findByPk(req.params.id)
+    await category.destroy()
+    res.redirect('/admin/categories')
   }
 }
 

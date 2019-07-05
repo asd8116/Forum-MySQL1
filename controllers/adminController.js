@@ -1,25 +1,21 @@
 const fs = require('fs')
 const db = require('../models')
-const Restaurant = db.Restaurant
-const Category = db.Category
-const User = db.User
+const { User, Restaurant, Category } = db
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const adminController = {
-  getRestaurants: (req, res) => {
-    return Restaurant.findAll({ include: [Category] }).then(restaurants => {
-      return res.render('admin/restaurants', { restaurants: restaurants, user: req.user, isAuthenticated: req.isAuthenticated })
-    })
+  getRestaurants: async (req, res) => {
+    const restaurants = await Restaurant.findAll({ include: [Category] })
+    res.render('admin/restaurants', { restaurants: restaurants })
   },
 
-  createRestaurant: (req, res) => {
-    Category.findAll().then(categories => {
-      return res.render('admin/create', { categories: categories })
-    })
+  createRestaurant: async (req, res) => {
+    const categories = await Category.findAll()
+    res.render('admin/create', { categories: categories })
   },
 
-  postRestaurant: (req, res) => {
+  postRestaurant: async (req, res) => {
     if (!req.body.name) {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
@@ -28,8 +24,8 @@ const adminController = {
     const { file } = req
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID)
-      imgur.upload(file.path, (err, img) => {
-        return Restaurant.create({
+      imgur.upload(file.path, async (err, img) => {
+        await Restaurant.create({
           name: req.body.name,
           tel: req.body.tel,
           address: req.body.address,
@@ -38,17 +34,12 @@ const adminController = {
           image: file ? img.data.link : null,
           CategoryId: req.body.categoryId
         })
-          .then(restaurant => {
-            req.flash('success_messages', 'restaurant was successfully created')
-            return res.redirect('/admin/restaurants')
-          })
-          .catch(err => {
-            console.log(err)
-            return res.status(422).json(err)
-          })
+
+        req.flash('success_messages', 'restaurant was successfully created')
+        res.redirect('/admin/restaurants')
       })
     } else {
-      return Restaurant.create({
+      await Restaurant.create({
         name: req.body.name,
         tel: req.body.tel,
         address: req.body.address,
@@ -57,32 +48,24 @@ const adminController = {
         image: null,
         CategoryId: req.body.categoryId
       })
-        .then(restaurant => {
-          req.flash('success_messages', 'restaurant was successfully created')
-          return res.redirect('/admin/restaurants')
-        })
-        .catch(err => {
-          console.log(err)
-          return res.status(422).json(err)
-        })
+
+      req.flash('success_messages', 'restaurant was successfully created')
+      res.redirect('/admin/restaurants')
     }
   },
 
-  getRestaurant: (req, res) => {
-    return Restaurant.findByPk(req.params.id, { include: [Category] }).then(restaurant => {
-      return res.render('admin/restaurant', { restaurant: restaurant })
-    })
+  getRestaurant: async (req, res) => {
+    const restaurant = await Restaurant.findByPk(req.params.id, { include: [Category] })
+    res.render('admin/restaurant', { restaurant: restaurant })
   },
 
-  editRestaurant: (req, res) => {
-    return Restaurant.findByPk(req.params.id).then(restaurant => {
-      Category.findAll().then(categories => {
-        return res.render('admin/create', { categories: categories, restaurant: restaurant })
-      })
-    })
+  editRestaurant: async (req, res) => {
+    const restaurant = await Restaurant.findByPk(req.params.id)
+    const categories = await Category.findAll()
+    res.render('admin/create', { categories: categories, restaurant: restaurant })
   },
 
-  putRestaurant: (req, res) => {
+  putRestaurant: async (req, res) => {
     if (!req.body.name) {
       req.flash('error_messages', "name didn't exist")
       return res.redirect('back')
@@ -91,69 +74,58 @@ const adminController = {
     const { file } = req
     if (file) {
       imgur.setClientID(IMGUR_CLIENT_ID)
-      imgur.upload(file.path, (err, img) => {
-        return Restaurant.findByPk(req.params.id).then(restaurant => {
-          restaurant
-            .update({
-              name: req.body.name,
-              tel: req.body.tel,
-              address: req.body.address,
-              opening_hours: req.body.opening_hours,
-              description: req.body.description,
-              image: file ? img.data.link : restaurant.image,
-              CategoryId: req.body.categoryId
-            })
-            .then(restaurant => {
-              req.flash('success_messages', 'restaurant was successfully to update')
-              res.redirect('/admin/restaurants')
-            })
+      imgur.upload(file.path, async (err, img) => {
+        const restaurantYes = await Restaurant.findByPk(req.params.id)
+        await restaurantYes.update({
+          name: req.body.name,
+          tel: req.body.tel,
+          address: req.body.address,
+          opening_hours: req.body.opening_hours,
+          description: req.body.description,
+          image: file ? img.data.link : restaurant.image,
+          CategoryId: req.body.categoryId
         })
+
+        req.flash('success_messages', 'restaurant was successfully to update')
+        res.redirect('/admin/restaurants')
       })
     } else {
-      return Restaurant.findByPk(req.params.id).then(restaurant => {
-        restaurant
-          .update({
-            name: req.body.name,
-            tel: req.body.tel,
-            address: req.body.address,
-            opening_hours: req.body.opening_hours,
-            description: req.body.description,
-            image: restaurant.image,
-            CategoryId: req.body.categoryId
-          })
-          .then(restaurant => {
-            req.flash('success_messages', 'restaurant was successfully to update')
-            res.redirect('/admin/restaurants')
-          })
+      const restaurantNo = await Restaurant.findByPk(req.params.id)
+      await restaurantNo.update({
+        name: req.body.name,
+        tel: req.body.tel,
+        address: req.body.address,
+        opening_hours: req.body.opening_hours,
+        description: req.body.description,
+        image: restaurant.image,
+        CategoryId: req.body.categoryId
       })
+
+      req.flash('success_messages', 'restaurant was successfully to update')
+      res.redirect('/admin/restaurants')
     }
   },
 
-  deleteRestaurant: (req, res) => {
-    return Restaurant.findByPk(req.params.id).then(restaurant => {
-      restaurant.destroy().then(restaurant => {
-        res.redirect('/admin/restaurants')
-      })
-    })
+  deleteRestaurant: async (req, res) => {
+    const restaurant = await Restaurant.findByPk(req.params.id)
+    await restaurant.destroy()
+    res.redirect('/admin/restaurants')
   },
 
-  editUsers: (req, res) => {
-    return User.findAll().then(users => {
-      return res.render('admin/users', { users: users })
-    })
+  editUsers: async (req, res) => {
+    const users = await User.findAll()
+    res.render('admin/users', { users: users })
   },
 
-  putUsers: (req, res) => {
-    return User.findByPk(req.params.id).then(user => {
-      const { isAdmin } = user
-      const updatedAdmin = !isAdmin
-      const output = updatedAdmin ? 'admin' : 'user'
+  putUsers: async (req, res) => {
+    const user = await User.findByPk(req.params.id)
+    const { isAdmin } = user
+    const updatedAdmin = !isAdmin
+    const output = updatedAdmin ? 'admin' : 'user'
+    await user.update({ isAdmin: updatedAdmin })
 
-      user.update({ isAdmin: updatedAdmin }).then(user => {
-        req.flash('success_messages', `${output} was successfully to update`)
-        res.redirect('/admin/users')
-      })
-    })
+    req.flash('success_messages', `${output} was successfully to update`)
+    res.redirect('/admin/users')
   }
 }
 

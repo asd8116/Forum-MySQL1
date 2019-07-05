@@ -23,9 +23,15 @@
   {{#each restaurants}}
   <div class="col-md-6">
     <div class="card mb-4 shadow-sm">
-      <div class="row no-gutters">
-        <div class="col-md-4">
-          <img class="card-img-top" src="{{this.image}}" alt="Card image cap" width="286px" height="180px">
+      <div class="row">
+        <div class="col-md-4 position-relative">
+          <span class="badge badge-warning position-absolute"
+            style="font-size: 2em; top:-5px;left:-1px">{{this.rank}}</span>
+          <a href="/restaurants/{{this.id}}">
+            <div class="w-100"
+              style="background-image: url({{this.image}});background-repeat: no-repeat;background-position: center;background-size: cover; padding-bottom: 100%">
+            </div>
+          </a>
         </div>
 
         <div class="col-md-8">

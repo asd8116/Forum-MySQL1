@@ -57,7 +57,7 @@
 啟動 MySQL 資料庫，開啟終端機並下載專案
 
 ```
-git clone https://github.com/asd8116/Expenses-MySQL.git
+git clone https://github.com/asd8116/Forum-MySQL1.git
 ```
 
 從終端機導入目標檔案，並下載工具包
